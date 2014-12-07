@@ -1,5 +1,6 @@
 package EVERender;
  
+import com.jme3.app.FlyCamAppState;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.RawInputListener;
 import com.jme3.input.event.JoyAxisEvent;
@@ -44,8 +45,8 @@ public class EveRender extends SimpleApplication implements RawInputListener {
     public Node universe;
     private LogChaseCamera camera;
     
-    public final float SPEEDUP_JUMPS = 20.0f;
-    public final float SPEEDUP_KILLS = 200.0f;
+    public float SPEEDUP_JUMPS = 1.0f;
+    public float SPEEDUP_KILLS = 1.0f;
     
     private Galaxy g;
     private APIScraper apiScraper;
@@ -60,7 +61,7 @@ public class EveRender extends SimpleApplication implements RawInputListener {
             lineColor;
     
     // whether to exit as soon as any input is recieved
-    private final boolean screensaver = true;
+    private boolean screensaver = false;
  
     public static void main(String[] args){
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -90,9 +91,13 @@ public class EveRender extends SimpleApplication implements RawInputListener {
      * JME method to initialize the app. Called by JME.
      */
     @Override public void simpleInitApp() {
+        // remove default flyCam
+        stateManager.detach( stateManager.getState(FlyCamAppState.class));
+        
         // set up universe node to contain everything except skybox
         universe = new Node();
         rootNode.attachChild(universe);
+        inputManager.setCursorVisible(false);
         
         setUpCamera();
         setUpHud();
@@ -106,7 +111,6 @@ public class EveRender extends SimpleApplication implements RawInputListener {
     }
     
     private void setUpCamera() {
-        flyCam.setEnabled(false);
         camera = setCameraDefaults(new LogChaseCamera(cam, rootNode, inputManager));
         cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 1/64f, 1024);
     }
@@ -250,20 +254,32 @@ public class EveRender extends SimpleApplication implements RawInputListener {
      */
     
     /**
-     * Loads color data from assets/colors.txt. Populates variables that define
-     * star and line colors.
+     * Turns this instance into a screensaver (instructs the camera to hide the
+     * mouse cursor)
      */
-    public void loadColorData() {
-        ArrayList<String> colorText = null;
+    private void makeScreensaver() {
+        screensaver = true;
+        camera.setDragToRotate(false);
+    }
+    
+    /**
+     * Loads settings from config.txt. Defines star/line colors and speed of
+     * jump/kill simulation.
+     */
+    public void loadSettings() {
+        ArrayList<String> settingsText = null;
         try {
-            Path path = Paths.get("assets/colors.txt");
-            colorText = (ArrayList<String>)Files.readAllLines(
+            Path path = Paths.get("config.txt");
+            settingsText = (ArrayList<String>)Files.readAllLines(
                     path, StandardCharsets.US_ASCII);
         } catch (IOException ex) {
-            System.out.println("FUCK!");
+            System.out.println("IOException when reading config.txt");
         }
         
-        for (String line : colorText) {
+        for (String line : settingsText) {
+            int commentIndex = line.indexOf("//");
+            if (commentIndex >= 0) line = line.substring(0, commentIndex);
+            
             String[] tokens = line.split(":");
             if (tokens.length < 2) continue;
             
@@ -285,8 +301,29 @@ public class EveRender extends SimpleApplication implements RawInputListener {
                 }
             } else if (type.equals("lines")) {
                 lineColor = parseColor(tokens[1]);
+            } else if (type.equals("jumpspeed")) {
+                SPEEDUP_JUMPS = Float.parseFloat(tokens[1]);
+            } else if (type.equals("killspeed")) {
+                SPEEDUP_KILLS = Float.parseFloat(tokens[1]);
+            } else if (type.equals("screensaver")) {
+                if(parseBool(tokens[1])) makeScreensaver();
             }
         }
+    }
+    
+    private boolean parseBool(String in) {
+        in = in.trim().toLowerCase();
+        
+        if (in.equals("true") ||
+                in.equals("yes") ||
+                in.equals("hija'") || // Klingon
+                in.equals("hislah")) return true;
+        
+        if (in.equals("false") ||
+                in.equals("no") ||
+                in.equals("ghobe'")) return false;
+        
+        return false;
     }
     
     /**
@@ -330,7 +367,7 @@ public class EveRender extends SimpleApplication implements RawInputListener {
             starsText = (ArrayList<String>)Files.readAllLines(
                     path, StandardCharsets.US_ASCII);
         } catch (IOException ex) {
-            System.out.println("FUCK!");
+            System.out.println("IOException when reading systems.txt");
         }
         
         for (String line : starsText) {
@@ -394,7 +431,7 @@ public class EveRender extends SimpleApplication implements RawInputListener {
             gatesText = (ArrayList<String>)Files.readAllLines(
                     path, StandardCharsets.US_ASCII);
         } catch (IOException ex) {
-            System.out.println("FUCK!");
+            System.out.println("IOException when reading gates.txt");
         }
         
         for (String line : gatesText) {

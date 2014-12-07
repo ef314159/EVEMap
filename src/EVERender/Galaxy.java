@@ -32,7 +32,7 @@ public class Galaxy{
     public Galaxy(EveRender main) {
         this.main = main;
 
-        main.loadColorData();
+        main.loadSettings();
         stars = main.loadStarData();
         gates = main.loadGateData(stars);
 

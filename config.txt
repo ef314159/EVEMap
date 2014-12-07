@@ -1,0 +1,19 @@
+// color gradient from -1.0 to 0.0
+Nullsec:	0.5, 0.0, 0.5;	1.0, 0.0, 0.0
+// color gradient from 0.0 to 0.5
+Lowsec:		0.0, 1.0, 0.5;	1.0, 1.0, 0.5
+// color gradient from 0.5 to 1.0
+Highsec:	0.0, 0.5, 1.0;	0.0, 1.0, 1.0
+
+// jumpgate line color
+Lines:		.35, 0.5, .25
+
+// speed (in multiples of a realistic amount) of jump and kill rendering
+jumpspeed:	5.2
+killspeed:	25.1
+
+// whether to terminate as soon as input is received
+// accepts TRUE, YES, HIja', or HISlaH (Klingon) for yes
+// accepts FALSE, NO, or ghobe' (Klingon) for no
+// (not case sensitive)
+screensaver:false

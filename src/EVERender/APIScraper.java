@@ -60,10 +60,10 @@ public class APIScraper extends Thread  {
                 
             in.close();
         } catch (MalformedURLException ex) {
-            System.err.println("FUCK! Malformed URL when scraping jump data.");
+            System.err.println("Malformed URL when scraping jump data.");
             System.err.println(ex.getMessage());
         } catch (IOException ex) {
-            System.err.println("FUCK! IOException when scraping for jump data.");
+            System.err.println("IOException when scraping for jump data.");
             System.err.println(ex.getMessage());
         }
     }
@@ -88,10 +88,10 @@ public class APIScraper extends Thread  {
             
             in.close();
         } catch (MalformedURLException ex) {
-            System.err.println("FUCK! Malformed URL when scraping kill data.");
+            System.err.println("Malformed URL when scraping kill data.");
             System.err.println(ex.getMessage());
         } catch (IOException ex) {
-            System.err.println("FUCK! IOException when scraping for kill data.");
+            System.err.println("IOException when scraping for kill data.");
             System.err.println(ex.getMessage());
         }
     }
