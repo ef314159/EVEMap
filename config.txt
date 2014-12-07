@@ -16,4 +16,4 @@ killspeed:	25.1
 // accepts TRUE, YES, HIja', or HISlaH (Klingon) for yes
 // accepts FALSE, NO, or ghobe' (Klingon) for no
 // (not case sensitive)
-screensaver:false
+screensaver: true
